@@ -29,17 +29,19 @@
     <meta name="twitter:description" content="%SEO_DESC%" />
     <meta name="twitter:image" content="%SITE_URL%/og-image.png" />
 
-    <!-- Шрифты: Geologica (заголовки) + Onest (текст), обе с полной поддержкой казахских букв -->
+    <!-- Шрифты: Onest (текст и заголовки) + Lora italic (акцентные слова), обе с полной поддержкой казахских букв -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Geologica:wght@600;700;800&family=Onest:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin"
+      href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin"
       media="print"
       onload="this.media='all'"
     />
+    <!-- Lora — только для акцентных слов; optional: не перерисовываем заголовок, если шрифт не успел -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,500&display=optional&subset=cyrillic,cyrillic-ext,latin" media="print" onload="this.media='all'" />
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@600;700;800&family=Onest:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" />
     </noscript>
 
     <!-- %SEO_SCHEMA% — разметка schema.org (LocalBusiness + FAQPage) подставляется при сборке из config -->

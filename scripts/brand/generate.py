@@ -140,7 +140,7 @@ def lockup(light=False, pid='L'):
     sd, _ = text_path(SLOGAN, 500, 10.5, sx, 66, tracking=0.34)
     glow = ''
     filt_g = filt_b = ''
-    if not light:
+    if False:  # неоновое свечение отключено — чище и спокойнее
         glow = (
             f'<defs><filter id="{pid}fg" x="-20%" y="-40%" width="140%" height="180%">'
             f'<feDropShadow dx="0" dy="0" stdDeviation="2.4" flood-color="{GOLD["glow"]}" flood-opacity=".55"/></filter>'

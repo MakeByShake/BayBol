@@ -1,4 +1,3 @@
-import { Sparkle } from 'lucide-react'
 import { useTx } from '../hooks/useTx'
 
 /** Бегущая строка с ключевыми фактами */
@@ -10,16 +9,16 @@ export function Marquee() {
     <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
       {items.map((s, i) => (
         <li key={i} className="flex items-center whitespace-nowrap">
-          <span className="px-5 font-display text-sm font-semibold uppercase tracking-[0.08em] text-ink sm:px-7 sm:text-base">{s}</span>
-          <Sparkle size={14} className="text-gold" aria-hidden="true" />
+          <span className="px-6 text-[13px] font-medium uppercase tracking-[0.12em] text-ink-muted">{s}</span>
+          <span aria-hidden="true" className="h-1 w-1 rounded-full bg-gold" />
         </li>
       ))}
     </ul>
   )
 
   return (
-    <div className="relative border-y border-white/[0.06] bg-night-2/80 py-4 sm:py-5">
-      <div className="flex overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
+    <div className="tone-dark2 border-y border-line/10 py-4">
+      <div className="flex overflow-hidden">
         <div className="flex w-max animate-marquee motion-reduce:animate-none">
           {row(false)}
           {row(true)}

@@ -1,9 +1,6 @@
-import { ArrowUpRight, BadgeCheck, Building, Camera, MapPin, Users } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { SITE } from '../config/site'
 import { useTx } from '../hooks/useTx'
-import { GlowCard } from './ui/GlowCard'
-import { InstagramIcon } from './ui/Icons'
-import { PhotoSlot } from './ui/PhotoSlot'
 import { Reveal } from './ui/Reveal'
 import { SectionHeading } from './ui/SectionHeading'
 
@@ -16,51 +13,63 @@ export function Trust() {
     address: SITE.company.address[lang],
     handle: SITE.instagram.handle,
   }
-  const icons = [
-    <BadgeCheck key="0" size={22} strokeWidth={1.6} aria-hidden="true" />,
-    <MapPin key="1" size={22} strokeWidth={1.6} aria-hidden="true" />,
-    <Building key="2" size={22} strokeWidth={1.6} aria-hidden="true" />,
-    <InstagramIcon key="3" size={22} />,
-  ]
 
   return (
-    <section aria-labelledby="trust-title" className="section bg-night-2/60">
+    <section aria-labelledby="trust-title" className="section tone-light">
       <div className="container-x">
-        <SectionHeading id="trust-title" eyebrow={s.eyebrow} title={s.title} accent={s.titleAccent} />
+        <SectionHeading n="12" id="trust-title" eyebrow={s.eyebrow} title={s.title} accent={s.titleAccent} />
 
-        <div className="mt-12 grid gap-4 lg:grid-cols-[1fr_1.05fr] lg:gap-6">
-          <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-            {s.items.map((it, i) => (
-              <Reveal as="li" key={i} delay={i * 0.06}>
-                <GlowCard glow={i === 0 ? 'gold' : 'sky'} className="h-full p-5 sm:p-6">
-                  <span className={`grid h-11 w-11 place-items-center rounded-2xl ${i === 0 ? 'bg-gold/10 text-gold' : 'bg-sky/10 text-sky'}`}>
-                    {icons[i]}
-                  </span>
-                  <h3 className="mt-4 font-display text-base font-semibold">{it.title}</h3>
-                  <p className="mt-1.5 break-words text-sm leading-relaxed text-ink-muted">{f(it.text, vars)}</p>
-                  {i === 3 && (
-                    <a
-                      href={SITE.instagram.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-sky hover:text-sky-glow"
-                    >
-                      {s.instagramBtn}
-                      <ArrowUpRight size={16} aria-hidden="true" />
-                    </a>
-                  )}
-                </GlowCard>
-              </Reveal>
+        <ul className="mt-12 grid border-t border-line/15 sm:grid-cols-2 lg:grid-cols-4">
+          {s.items.map((it, i) => (
+            <Reveal
+              as="li"
+              key={i}
+              delay={i * 0.05}
+              className={`border-b border-line/10 py-6 sm:pr-6 ${i % 2 ? 'sm:border-l sm:pl-6' : ''} ${i === 2 ? 'lg:border-l lg:pl-6' : ''} lg:border-b-0`}
+            >
+              <span className="text-xs font-semibold text-accent">{String(i + 1).padStart(2, '0')}</span>
+              <h3 className="mt-3 text-base font-semibold">{it.title}</h3>
+              <p className="mt-1.5 break-words text-sm leading-relaxed text-ink-muted">{f(it.text, vars)}</p>
+              {i === 3 && (
+                <a
+                  href={SITE.instagram.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-link underline-offset-4 hover:underline"
+                >
+                  {s.instagramBtn}
+                  <ArrowUpRight size={15} aria-hidden="true" />
+                </a>
+              )}
+            </Reveal>
+          ))}
+        </ul>
+
+        {/* настоящие фото клиентов */}
+        <Reveal className="mt-14">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+            <h3 className="text-xl font-semibold sm:text-2xl">{s.clientsTitle}</h3>
+            <p className="max-w-md text-sm leading-relaxed text-ink-muted">{s.clientsNote}</p>
+          </div>
+          <ul className="mt-6 grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
+            {SITE.photos.clients.map((src, i) => (
+              <li key={src} className="relative overflow-hidden rounded-lg bg-[#0B2233]/10">
+                <img
+                  src={src}
+                  alt={s.clientAlt}
+                  loading="lazy"
+                  decoding="async"
+                  width={720}
+                  height={540}
+                  className="aspect-[4/3] h-full w-full object-cover object-[50%_30%]"
+                />
+                <span className="absolute bottom-2 left-2 rounded bg-[#0B2233]/80 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </li>
             ))}
           </ul>
-
-          <Reveal delay={0.1} className="grid grid-cols-2 gap-3 sm:gap-4">
-            <PhotoSlot src={SITE.photos.office} alt={s.photoOffice} icon={<Camera size={24} aria-hidden="true" />} className="col-span-2 aspect-[16/9]" />
-            {SITE.photos.team.map((src, i) => (
-              <PhotoSlot key={src} src={src} alt={`${s.photoTeam}${SITE.photos.team.length > 1 ? ` · ${i + 1}` : ''}`} icon={<Users size={24} aria-hidden="true" />} className="aspect-square" />
-            ))}
-          </Reveal>
-        </div>
+        </Reveal>
       </div>
     </section>
   )

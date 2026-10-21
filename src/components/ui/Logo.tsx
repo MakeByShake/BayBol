@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import { useLang } from '../../i18n/LanguageContext'
+import logoFull from '../../assets/logo/logo-full.svg'
 
 const PLANE =
   'M9 0 C9 -.9 7.6 -1.4 5 -1.4 L1.6 -1.4 L-2.6 -7.6 L-5 -7.6 L-2.4 -1.4 L-5.6 -1.4 L-7.6 -4 L-9.2 -4 L-8 0 L-9.2 4 L-7.6 4 L-5.6 1.4 L-2.4 1.4 L-5 7.6 L-2.6 7.6 L1.6 1.4 L5 1.4 C7.6 1.4 9 .9 9 0 Z'
@@ -28,20 +28,7 @@ export function LogoMark({ className, size = 40 }: { className?: string; size?: 
   )
 }
 
-/** Полный логотип: знак + «BayBol Visa» + слоган */
-export function Logo({ compact = false }: { compact?: boolean }) {
-  const { t } = useLang()
-  return (
-    <span className="flex items-center gap-2.5">
-      <LogoMark size={compact ? 34 : 40} className="shrink-0" />
-      <span className="flex flex-col leading-none">
-        <span className="font-display text-[19px] font-bold tracking-tight sm:text-xl">
-          <span className="neon-gold text-gold">BayBol</span> <span className="neon-sky text-sky">Visa</span>
-        </span>
-        {!compact && (
-          <span className="mt-1.5 text-[8.5px] font-medium uppercase tracking-[0.3em] text-ink-muted">{t.brand.slogan}</span>
-        )}
-      </span>
-    </span>
-  )
+/** Полный логотип (знак + «BayBol Visa» + слоган) — готовый SVG из src/assets/logo */
+export function Logo({ className = 'h-9 w-auto sm:h-10' }: { className?: string }) {
+  return <img src={logoFull} alt="BayBol Visa" width={220} height={50} className={className} />
 }

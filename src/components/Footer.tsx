@@ -12,33 +12,34 @@ export function Footer({ onPrivacy }: { onPrivacy: () => void }) {
   const ft = t.footer
 
   return (
-    <footer className="border-t border-white/[0.06] bg-night pb-28 pt-14 lg:pb-14">
+    <footer className="bg-[#05080F] pb-28 pt-14 lg:pb-12">
       <div className="container-x">
-        <div className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr]">
+        <div className="grid gap-10 md:grid-cols-[1.3fr_1fr_1fr]">
           <div>
-            <Logo />
-            <p className="mt-5 text-sm leading-relaxed text-ink-muted">
+            <Logo className="h-9 w-auto" />
+            <p className="mt-6 text-sm leading-relaxed text-ink-muted">
               {SITE.company.legalName}
               <br />
               {ft.bin}: {SITE.company.bin}
             </p>
           </div>
           <div className="text-sm leading-relaxed text-ink-muted">
+            <p className="label mb-3">{t.contacts.address}</p>
             <p>{SITE.company.address[lang]}</p>
-            <p className="mt-2">{SITE.workHours[lang]}</p>
+            <p className="mt-1">{SITE.workHours[lang]}</p>
           </div>
           <div className="text-sm">
-            <p className="text-ink-muted">{ft.phones}</p>
-            <ul className="mt-2 space-y-1.5">
+            <p className="label mb-3">{ft.phones}</p>
+            <ul className="space-y-1.5">
               {SITE.whatsapp.map((w, i) => (
                 <li key={w.number}>
-                  <a href={waLink(f(t.wa.manager), i)} target="_blank" rel="noopener noreferrer" className="font-medium text-ink hover:text-sky">
+                  <a href={waLink(f(t.wa.manager), i)} target="_blank" rel="noopener noreferrer" className="text-ink hover:text-link">
                     {w.display}
                   </a>
                 </li>
               ))}
               <li>
-                <a href={SITE.instagram.url} target="_blank" rel="noopener noreferrer" className="font-medium text-ink hover:text-sky">
+                <a href={SITE.instagram.url} target="_blank" rel="noopener noreferrer" className="text-ink hover:text-link">
                   Instagram {SITE.instagram.handle}
                 </a>
               </li>
@@ -46,7 +47,7 @@ export function Footer({ onPrivacy }: { onPrivacy: () => void }) {
           </div>
         </div>
 
-        <div className="mt-10 space-y-3 border-t border-white/[0.06] pt-8 text-xs leading-relaxed text-ink-muted">
+        <div className="mt-12 space-y-3 border-t border-white/[0.07] pt-8 text-xs leading-relaxed text-ink-muted">
           <p className="max-w-4xl">{f(ft.disclaimer)}</p>
           <p>
             {f(ft.facts, {
@@ -54,9 +55,9 @@ export function Footer({ onPrivacy }: { onPrivacy: () => void }) {
               courtDate: formatDate(DV.courtDate, 'numeric', t),
             })}
           </p>
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-3">
             <p>{f(ft.rights, { year: YEAR, brand: SITE.brand })}</p>
-            <button type="button" onClick={onPrivacy} className="font-medium text-sky underline-offset-4 hover:underline">
+            <button type="button" onClick={onPrivacy} className="font-medium text-link underline-offset-4 hover:underline">
               {ft.privacy}
             </button>
           </div>

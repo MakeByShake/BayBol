@@ -3,33 +3,31 @@ import { useEffect, useId, useRef, useState, type RefObject } from 'react'
 
 type Geom = { w: number; h: number; d: string; landX: number; landY: number; startY: number }
 
-/** Строит плавную «змейку» маршрута от верха страницы до точки посадки */
+/** Х-координата линии: в левом поле страницы, где нет текста */
+function railX(w: number): number {
+  if (w < 640) return 8 // поле 16px
+  if (w < 1024) return 12 // поле 24px
+  const content = Math.min(w, 1152)
+  return Math.max(16, (w - content) / 2 / 2 + 6)
+}
+
+/** Маршрут: мягкая волна вдоль левого поля, в конце — поворот к точке посадки */
 function buildPath(w: number, startY: number, landX: number, landY: number): string {
-  const mobile = w < 768
-  const contentW = Math.min(w, 1152)
-  const gutter = (w - contentW) / 2
-  const left = mobile ? 9 : Math.max(22, gutter * 0.5)
-  const right = mobile ? w - 9 : w - Math.max(22, gutter * 0.5)
-  const segment = mobile ? 1400 : 1100
-  const endY = landY - 260
-
-  const pts: [number, number][] = [[right, startY]]
+  const x = railX(w)
+  const amp = w < 1024 ? 3 : Math.min(18, x - 8) // насколько линия «гуляет» влево-вправо
+  const turnY = landY - Math.min(420, w < 640 ? 260 : 380)
+  const step = 600
+  let d = `M${x} ${startY}`
   let y = startY
-  let side = 0
-  while (y + segment < endY) {
-    y += segment
-    side ^= 1
-    pts.push([mobile ? (side ? left : right) : side ? left : right, y])
+  let side = 1
+  while (y + step < turnY) {
+    const ny = y + step
+    d += ` C${x + amp * side} ${y + step * 0.35} ${x + amp * side} ${y + step * 0.65} ${x} ${ny}`
+    y = ny
+    side *= -1
   }
-  pts.push([landX, landY])
-
-  let d = `M${pts[0][0]} ${pts[0][1]}`
-  for (let i = 1; i < pts.length; i++) {
-    const [x0, y0] = pts[i - 1]
-    const [x1, y1] = pts[i]
-    const dy = (y1 - y0) / 2
-    d += ` C${x0} ${y0 + dy} ${x1} ${y1 - dy} ${x1} ${y1}`
-  }
+  // поворот к центру и посадка
+  d += ` L${x} ${turnY} C${x} ${turnY + (landY - turnY) * 0.75} ${landX} ${landY - (landY - turnY) * 0.6} ${landX} ${landY}`
   return d
 }
 
@@ -54,9 +52,9 @@ export function FlightPath({ containerRef, landingRef }: { containerRef: RefObje
       const c = container.getBoundingClientRect()
       const w = c.width
       const h = container.scrollHeight
-      // маршрут начинается у нижней части первого экрана, чтобы не перекрывать карточку
+      // маршрут начинается под первым экраном
       const hero = container.querySelector<HTMLElement>('#top')
-      const startY = hero ? Math.round(hero.offsetHeight * 0.78) : 140
+      const startY = hero ? hero.offsetHeight : 600
       let landX = w / 2
       let landY = h - 400
       if (landing) {
@@ -107,12 +105,11 @@ export function FlightPath({ containerRef, landingRef }: { containerRef: RefObje
       const p = path.getPointAtLength(len)
       const ahead = path.getPointAtLength(Math.min(total, len + 2))
       const behind = path.getPointAtLength(Math.max(0, len - 2))
-      const angle = (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI
       const landed = len >= total - 1
+      const angle = landed ? 90 : (Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180) / Math.PI
       if (planeRef.current) {
-        planeRef.current.style.transform = `translate(${p.x}px, ${p.y}px) translate(-50%, -50%) rotate(${landed ? 90 : angle}deg)`
+        planeRef.current.style.transform = `translate(${p.x}px, ${p.y}px) translate(-50%, -50%) rotate(${angle}deg)`
         planeRef.current.style.opacity = targetY < geom.startY ? '0' : '1'
-        planeRef.current.dataset.landed = landed ? 'true' : 'false'
       }
       if (revealRef.current) revealRef.current.style.strokeDashoffset = String(total - len)
     }
@@ -133,42 +130,32 @@ export function FlightPath({ containerRef, landingRef }: { containerRef: RefObje
   if (!geom) return null
 
   return (
-    <>
-    {/* линия — за контентом */}
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+    // поверх секций, но линия идёт по полю страницы и не пересекает текст
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
       <svg width={geom.w} height={geom.h} className="absolute left-0 top-0" fill="none">
         <defs>
-          <linearGradient id={`${id}g`} x1="0" y1="0" x2="0" y2={geom.h} gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#6CC3FF" />
-            <stop offset="1" stopColor="#F4C46A" />
-          </linearGradient>
           <mask id={`${id}m`} maskUnits="userSpaceOnUse" x="0" y="0" width={geom.w} height={geom.h}>
             <path ref={revealRef} d={geom.d} stroke="#fff" strokeWidth="8" style={reduce ? undefined : { strokeDasharray: '0 1' }} />
           </mask>
         </defs>
         {/* весь маршрут — едва заметный пунктир */}
-        <path ref={pathRef} d={geom.d} stroke="#6CC3FF" strokeOpacity="0.16" strokeWidth="1.5" strokeDasharray="2 10" strokeLinecap="round" />
-        {/* пройденная часть — ярче */}
-        <path d={geom.d} stroke={`url(#${id}g)`} strokeOpacity="0.75" strokeWidth="2" strokeDasharray="2 10" strokeLinecap="round" mask={`url(#${id}m)`} />
+        <path ref={pathRef} d={geom.d} stroke="#6C8DB8" strokeOpacity="0.35" strokeWidth="1.25" strokeDasharray="1.5 7" strokeLinecap="round" />
+        {/* пройденная часть — золотом */}
+        <path d={geom.d} stroke="#E0A84A" strokeWidth="1.5" strokeDasharray="1.5 7" strokeLinecap="round" mask={`url(#${id}m)`} />
       </svg>
-    </div>
-    {/* самолётик — поверх контента */}
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] overflow-hidden">
       {!reduce && (
-        <div
-          ref={planeRef}
-          className="absolute left-0 top-0 opacity-0 transition-opacity duration-500 will-change-transform"
-          style={{ filter: 'drop-shadow(0 0 8px rgba(108,195,255,.8))' }}
-        >
-          <svg width="26" height="26" viewBox="-12 -12 24 24">
+        <div ref={planeRef} className="absolute left-0 top-0 opacity-0 transition-opacity duration-500 will-change-transform">
+          <svg viewBox="-12 -12 24 24" className="h-4 w-4 sm:h-[22px] sm:w-[22px]">
             <path
               d="M9 0 C9 -.9 7.6 -1.4 5 -1.4 L1.6 -1.4 L-2.6 -7.6 L-5 -7.6 L-2.4 -1.4 L-5.6 -1.4 L-7.6 -4 L-9.2 -4 L-8 0 L-9.2 4 L-7.6 4 L-5.6 1.4 L-2.4 1.4 L-5 7.6 L-2.6 7.6 L1.6 1.4 L5 1.4 C7.6 1.4 9 .9 9 0 Z"
-              fill="#BFE6FF"
+              fill="#F4C46A"
+              stroke="#0B2233"
+              strokeWidth="1"
+              strokeLinejoin="round"
             />
           </svg>
         </div>
       )}
     </div>
-    </>
   )
 }

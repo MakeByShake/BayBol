@@ -39,9 +39,7 @@ export function FloatingWhatsApp() {
     <>
       <div
         ref={boxRef}
-        className={`fixed right-4 z-[60] flex flex-col items-end gap-3 transition-all duration-300 sm:right-6 ${
-          showBar ? 'bottom-[92px] lg:bottom-6' : 'invisible bottom-5 translate-y-4 opacity-0 sm:bottom-6 lg:visible lg:translate-y-0 lg:opacity-100'
-        }`}
+        className="fixed bottom-6 right-6 z-[60] hidden flex-col items-end gap-3 lg:flex"
       >
         <AnimatePresence>
           {open && (
@@ -51,7 +49,7 @@ export function FloatingWhatsApp() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.96 }}
               transition={{ duration: 0.2 }}
-              className="glass w-[260px] origin-bottom-right bg-night-card/95 p-3 shadow-2xl"
+              className="w-[260px] origin-bottom-right rounded-xl border border-white/10 bg-[#0E1630] p-2 shadow-2xl"
             >
               <p className="px-2 pb-2 pt-1 text-sm font-semibold text-ink-muted">{t.float.title}</p>
               {SITE.whatsapp.map((w, i) => (
@@ -60,7 +58,7 @@ export function FloatingWhatsApp() {
                   href={waLink(f(t.wa.general), i)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-2xl p-2.5 transition-colors hover:bg-white/[0.06]"
+                  className="flex items-center gap-3 rounded-lg p-2.5 transition-colors hover:bg-white/[0.06]"
                 >
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-wa text-[#06210f]">
                     <WhatsAppIcon size={20} />
@@ -80,16 +78,15 @@ export function FloatingWhatsApp() {
           aria-expanded={open}
           aria-controls="wa-panel"
           aria-label={open ? t.float.close : t.float.open}
-          className="relative grid h-14 w-14 place-items-center rounded-full bg-wa text-white shadow-[0_10px_30px_-6px_rgba(37,211,102,.6)] transition-transform hover:scale-105 active:scale-95"
+          className="relative grid h-14 w-14 place-items-center rounded-full bg-wa text-white shadow-lg shadow-black/40 transition-transform hover:scale-105 active:scale-95"
         >
-          {!open && <span aria-hidden="true" className="absolute inset-0 animate-ping2 rounded-full bg-wa/40 [animation-duration:2.4s]" />}
           {open ? <X size={26} aria-hidden="true" /> : <WhatsAppIcon size={30} className="relative" />}
         </button>
       </div>
 
       {/* липкая панель внизу — только мобильные/планшеты */}
       <div
-        className={`pb-safe fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-night/85 px-4 pt-3 backdrop-blur-xl transition-transform duration-300 lg:hidden ${
+        className={`pb-safe fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-night/95 px-4 pt-3 transition-transform duration-300 lg:hidden ${
           showBar ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
@@ -98,11 +95,10 @@ export function FloatingWhatsApp() {
           target="_blank"
           rel="noopener noreferrer"
           tabIndex={showBar ? 0 : -1}
-          className="relative mb-3 flex h-[52px] items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-b from-gold-glow to-gold text-[15px] font-semibold text-night"
+          className="mb-3 flex h-[52px] items-center justify-center gap-2 rounded-[10px] bg-gold text-[15px] font-semibold text-night"
         >
-          <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-1/3 animate-shine bg-gradient-to-r from-transparent via-white/70 to-transparent" />
-          <WhatsAppIcon size={20} className="relative" />
-          <span className="relative">{f(t.float.sticky, { price: formatPrice(SITE.prices.single) })}</span>
+          <WhatsAppIcon size={20} />
+          <span>{f(t.float.sticky, { price: formatPrice(SITE.prices.single) })}</span>
         </a>
       </div>
     </>

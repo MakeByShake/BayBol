@@ -1,16 +1,13 @@
 import { m, useReducedMotion } from 'framer-motion'
-import { ArrowRight, CircleDollarSign, Gavel, SearchCheck, Zap } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { SITE } from '../config/site'
 import { useTx } from '../hooks/useTx'
-import { formatPrice, nb } from '../lib/format'
+import { formatPrice } from '../lib/format'
 import { waLink } from '../lib/whatsapp'
 import { GreenCard } from './GreenCard'
 import { StarField } from './StarField'
 import { GoldButton, OutlineButton } from './ui/Buttons'
 import { Countdown } from './ui/Countdown'
-import { WhatsAppIcon } from './ui/Icons'
-
-const PERK_ICONS = [CircleDollarSign, Zap, SearchCheck]
 
 export function Hero() {
   const { t, f } = useTx()
@@ -21,80 +18,76 @@ export function Hero() {
     reduce
       ? {}
       : {
-          initial: { opacity: 0, y: 22 },
+          initial: { opacity: 0, y: 14 },
           animate: { opacity: 1, y: 0 },
-          transition: { duration: 0.8, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] as const },
+          transition: { duration: 0.6, delay: 0.05 + i * 0.06, ease: [0.22, 1, 0.36, 1] as const },
         }
 
   return (
-    <section id="top" aria-labelledby="hero-title" className="relative overflow-hidden pb-16 pt-[104px] sm:pb-24 sm:pt-32 lg:min-h-[100svh] lg:pt-36">
-      {/* небо */}
-      <div aria-hidden="true" className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(120%_70%_at_50%_-10%,rgba(108,195,255,.22),transparent_60%)]" />
-        <StarField />
-        {/* золотое «солнце-монета» снизу */}
-        <div className="absolute -bottom-[38vh] left-1/2 h-[70vh] w-[120vw] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(244,196,106,.38),rgba(200,147,46,.12)_55%,transparent)] blur-2xl lg:w-[80vw]" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-night" />
+    <section id="top" aria-labelledby="hero-title" className="tone-dark relative overflow-hidden pt-[100px] sm:pt-28 lg:pt-32">
+      {/* ночное небо — едва заметно */}
+      <div aria-hidden="true" className="absolute inset-0 opacity-60">
+        <div className="absolute inset-0 bg-[radial-gradient(90%_60%_at_80%_0%,rgba(46,143,214,.16),transparent_65%)]" />
+        <StarField density={0.00007} />
       </div>
 
-      <div className="container-x relative grid items-center gap-12 lg:grid-cols-[1.1fr_.9fr] lg:gap-10">
-        <div>
-          <m.p {...item(0)} className="inline-flex max-w-full items-center gap-2 rounded-full border border-gold/30 bg-gold/[0.08] py-1.5 pl-2 pr-4 text-[13px] font-medium text-gold-glow">
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gold/20">
-              <Gavel size={13} className="text-gold" aria-hidden="true" />
-            </span>
-            <span>{f(h.badge, { date: f('{openDate}') })}</span>
-          </m.p>
+      <div className="container-x relative">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_.85fr] lg:gap-14">
+          <div>
+            <m.p {...item(0)} className="label flex items-start gap-3 leading-relaxed sm:items-center">
+              <span aria-hidden="true" className="mt-2 h-px w-8 shrink-0 bg-gold sm:mt-0" />
+              <span>{f(h.badge, { date: f('{openDate}') })}</span>
+            </m.p>
 
-          <m.h1 {...item(1)} id="hero-title" className="mt-6 text-[34px] font-extrabold leading-[1.06] sm:text-5xl lg:text-[62px]">
-            {nb(h.titleA)} <span className="text-gradient">{h.titleAccent}</span>
-            {h.titleB && ` ${h.titleB}`}
-          </m.h1>
+            <m.h1 {...item(1)} id="hero-title" className="mt-6 text-[36px] font-semibold leading-[1.05] min-[400px]:text-[40px] sm:text-[52px] lg:text-[60px] xl:text-[66px]">
+              {h.titleA} <span className="accent-word">{h.titleAccent}</span>
+              {h.titleB && ` ${h.titleB}`}
+            </m.h1>
 
-          <m.p {...item(2)} className="mt-5 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
-            {f(h.subtitle)}
-          </m.p>
+            <m.p {...item(2)} className="mt-6 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
+              {f(h.subtitle)}
+            </m.p>
 
-          <m.div {...item(3)} className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="neon-gold font-display text-4xl font-extrabold text-gold sm:text-5xl">{formatPrice(SITE.prices.single)}</span>
-            <span className="text-sm text-ink-muted sm:text-base">· {h.priceNote}</span>
-          </m.div>
+            <m.div {...item(3)} className="mt-7 flex flex-col gap-3 min-[480px]:flex-row min-[480px]:flex-wrap">
+              <GoldButton href={waLink(f(t.wa.general))} size="lg">
+                {h.ctaPrimary} · {formatPrice(SITE.prices.single)}
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </GoldButton>
+              <OutlineButton href="#check" size="lg">
+                {h.ctaSecondary}
+              </OutlineButton>
+            </m.div>
+            <m.p {...item(4)} className="mt-3 text-sm text-ink-muted">
+              {formatPrice(SITE.prices.single)} — {h.priceNote}
+            </m.p>
 
-          <m.div {...item(4)} className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <GoldButton href={waLink(f(t.wa.general))} size="lg">
-              <WhatsAppIcon size={20} />
-              {h.ctaPrimary}
-            </GoldButton>
-            <OutlineButton href="#check" size="lg">
-              {h.ctaSecondary}
-              <ArrowRight size={18} aria-hidden="true" />
-            </OutlineButton>
-          </m.div>
+            <m.div {...item(5)} className="mt-9">
+              <Countdown />
+            </m.div>
+          </div>
 
-          <m.ul {...item(5)} className="mt-7 flex flex-wrap gap-x-5 gap-y-3">
-            {h.perks.map((p, i) => {
-              const Icon = PERK_ICONS[i]
-              return (
-                <li key={i} className="flex items-center gap-2 text-sm text-ink">
-                  <Icon size={18} strokeWidth={1.6} className="text-sky" aria-hidden="true" />
-                  {f(p)}
-                </li>
-              )
-            })}
-          </m.ul>
-
-          <m.div {...item(6)} className="mt-9">
-            <Countdown />
+          <m.div
+            className="mx-auto w-full max-w-[440px] lg:max-w-none"
+            initial={reduce ? false : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <GreenCard />
           </m.div>
         </div>
 
-        <m.div
-          initial={reduce ? false : { opacity: 0, scale: 0.92, y: 30 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <GreenCard />
-        </m.div>
+        {/* три преимущества — строкой под первым экраном, как в документе */}
+        <ul className="mt-14 grid border-t border-line/10 sm:grid-cols-3 lg:mt-20">
+          {h.perks.map((p, i) => (
+            <li
+              key={i}
+              className={`flex items-baseline gap-3 py-5 sm:py-6 ${i ? 'border-t border-line/10 sm:border-l sm:border-t-0 sm:pl-6' : ''} ${i < 2 ? 'sm:pr-6' : ''}`}
+            >
+              <span className="text-xs font-semibold text-accent">{String(i + 1).padStart(2, '0')}</span>
+              <span className="text-[15px] font-medium">{f(p)}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )
