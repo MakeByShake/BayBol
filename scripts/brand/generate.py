@@ -32,7 +32,9 @@ _fonts = {}
 
 def fonts(weight):
     if weight not in _fonts:
-        _fonts[weight] = [TTFont(p) for p in sorted(glob.glob(os.path.join(FONTS, f'Geologica-{weight}-*.woff2')))]
+        # weight — число (Geologica) или префикс файла, например 'Literata-300'
+        prefix = f'Geologica-{weight}' if isinstance(weight, int) else weight
+        _fonts[weight] = [TTFont(p) for p in sorted(glob.glob(os.path.join(FONTS, f'{prefix}-*.woff2')))]
     return _fonts[weight]
 
 
@@ -188,48 +190,67 @@ def price_from_config():
 
 
 def og_image():
+    """Картинка для соцсетей в стиле «Дорожные документы»: бумага, заголовок, посадочный талон."""
     W, H = 1200, 630
-    logo, _, _ = lockup(False, 'og')
-    t1, _ = text_path('Грин-карта', 800, 92, 80, 318)
-    t2, t2w = text_path('DV-2027', 800, 92, 80, 420)
-    sub, _ = text_path('Заполним анкету без ошибок', 500, 34, 80, 498)
+    paper, paper2, ink, ink2, gold, sky = '#F5F0E6', '#FBF8F2', '#14213A', '#5B6478', '#F4C46A', '#1F6FAE'
+    logo, _, _ = lockup(True, 'og')
+    t1, _ = text_path('Подадим анкету', 'Literata-300', 64, 72, 250)
+    t2, _ = text_path('на грин-карту', 'Literata-300', 64, 72, 324)
+    t3, _ = text_path('DV-2027', 'Literata-300', 64, 72, 398)
+    sub, _ = text_path('Фото, анкета на всю семью, сбор $1 — всё в цене', 'PlexSans-400', 24, 72, 490)
     price = price_from_config()
-    pill_txt, pw = text_path(f'{price} · всё включено', 700, 30, 108, 568)
-    _, sw = text_path('Алматы · WhatsApp', 500, 24, 0, 0)
-    sd, _ = text_path('Алматы · WhatsApp', 500, 24, W - 80 - sw, 568)
-    big = mark_coin('ogm', False)
+    # талон справа
+    tx, ty, tw, th, stub = 720, 160, 420, 290, 128
+    cut = tx + tw - stub
+    lab = lambda s, x, y: text_path(s, 'PlexMono-500', 13, x, y, tracking=0.08)[0]
+    big = lambda s, x, y, size=40: text_path(s, 'PlexMono-500', size, x, y)[0]
+    ala = big('ALA', tx + 28, ty + 128)
+    usa_d, usa_w = text_path('USA', 'PlexMono-500', 40, 0, 0)
+    usa = big('USA', cut - 28 - usa_w, ty + 128)
+    pr_d, pr_w = text_path(price, 'PlexMono-500', 24, 0, 0)
+    pr = text_path(price, 'PlexMono-500', 24, cut + (stub - pr_w) / 2, ty + 90)[0]
+    bars = ''
+    x, k = cut + 22, 0
+    while x < tx + tw - 22:
+        w = [1.5, 1.5, 3, 4.5][(k * 7) % 4]
+        bars += f'<rect x="{x:.1f}" y="{ty + th - 92}" width="{w}" height="62" fill="{ink}"/>'
+        x += w + [2, 3, 3, 4][(k * 5) % 4]
+        k += 1
+    ticket = (
+        f'<defs><mask id="tm"><rect x="{tx}" y="{ty}" width="{tw}" height="{th}" fill="#fff"/>'
+        f'<circle cx="{cut}" cy="{ty}" r="13" fill="#000"/><circle cx="{cut}" cy="{ty + th}" r="13" fill="#000"/></mask></defs>'
+        f'<g transform="rotate(-3 {tx + tw / 2} {ty + th / 2})">'
+        f'<rect x="{tx}" y="{ty}" width="{tw}" height="{th}" fill="{paper2}" stroke="{ink}" stroke-opacity=".35" mask="url(#tm)"/>'
+        f'<line x1="{cut}" y1="{ty + 16}" x2="{cut}" y2="{ty + th - 16}" stroke="{ink}" stroke-opacity=".4" stroke-dasharray="4 4"/>'
+        f'<path d="{lab("ПОСАДОЧНЫЙ ТАЛОН", tx + 28, ty + 42)}" fill="{ink2}"/>'
+        f'<line x1="{tx + 28}" y1="{ty + 58}" x2="{cut - 28}" y2="{ty + 58}" stroke="{ink}" stroke-opacity=".25" stroke-dasharray="3 3"/>'
+        f'<path d="{ala}" fill="{ink}"/><path d="{usa}" fill="{ink}"/>'
+        f'<line x1="{tx + 118}" y1="{ty + 114}" x2="{cut - 118}" y2="{ty + 114}" stroke="{sky}" stroke-width="2" stroke-dasharray="5 4"/>'
+        f'<path d="{lab("ПРОГРАММА", tx + 28, ty + 190)}" fill="{ink2}"/>'
+        f'<path d="{text_path("DV-2027", "PlexMono-500", 20, tx + 28, ty + 218)[0]}" fill="{ink}"/>'
+        f'<path d="{lab("МЕСТО", tx + 170, ty + 190)}" fill="{ink2}"/>'
+        f'<path d="{text_path("ваше", "PlexMono-500", 20, tx + 170, ty + 218)[0]}" fill="{ink}"/>'
+        f'<path d="{lab("ЦЕНА", cut + 22, ty + 42)}" fill="{ink2}"/>'
+        f'<path d="{pr}" fill="{ink}"/>'
+        + bars + '</g>'
+    )
     inner = (
-        '<defs>'
-        '<radialGradient id="bgG" cx="80%" cy="105%" r="55%"><stop offset="0" stop-color="#F4C46A" stop-opacity=".55"/>'
-        '<stop offset=".45" stop-color="#C8932E" stop-opacity=".18"/><stop offset="1" stop-color="#070B1A" stop-opacity="0"/></radialGradient>'
-        '<radialGradient id="bgB" cx="15%" cy="-10%" r="60%"><stop offset="0" stop-color="#6CC3FF" stop-opacity=".35"/>'
-        '<stop offset="1" stop-color="#070B1A" stop-opacity="0"/></radialGradient>'
-        f'<linearGradient id="tg" x1="80" y1="0" x2="{80 + t2w}" y2="0" gradientUnits="userSpaceOnUse">'
-        '<stop offset="0" stop-color="#F4C46A"/><stop offset="1" stop-color="#6CC3FF"/></linearGradient>'
-        '</defs>'
-        f'<rect width="{W}" height="{H}" fill="#070B1A"/>'
-        f'<rect width="{W}" height="{H}" fill="url(#bgB)"/>'
-        f'<rect width="{W}" height="{H}" fill="url(#bgG)"/>'
-        + stars(90, W, H)
-        + '<path d="M560 640 C700 520 760 300 1010 150" fill="none" stroke="#6CC3FF" stroke-opacity=".5" stroke-width="2.5" stroke-dasharray="2 12" stroke-linecap="round"/>'
-        + f'<g transform="translate(790 150) scale(5.4)" opacity=".98">{big}</g>'
-        + f'<g transform="translate(80 64) scale(1.05)">{logo}</g>'
-        + f'<path d="{t1}" fill="#F5F7FF"/>'
-        + f'<path d="{t2}" fill="url(#tg)"/>'
-        + f'<path d="{sub}" fill="#A9B3D1"/>'
-        + f'<rect x="80" y="530" width="{pw + 56}" height="54" rx="27" fill="#F4C46A"/>'
-        + f'<path d="{pill_txt}" fill="#070B1A"/>'
-        + f'<path d="{sd}" fill="#A9B3D1"/>'
+        f'<rect width="{W}" height="{H}" fill="{paper}"/>'
+        f'<g transform="translate(72 64) scale(.95)">{logo}</g>'
+        f'<line x1="72" y1="160" x2="{W - 72}" y2="160" stroke="{ink}" stroke-opacity=".18"/>'
+        f'<path d="{t1}" fill="{ink}"/><path d="{t2}" fill="{ink}"/><path d="{t3}" fill="{ink}"/>'
+        f'<path d="{sub}" fill="{ink2}"/>'
+        f'<rect x="72" y="530" width="{text_path(price + " за анкету", "PlexSans-400", 24, 0, 0)[1] + 48}" height="54" fill="{gold}"/>'
+        f'<path d="{text_path(price + " за анкету", "PlexSans-400", 24, 96, 566)[0]}" fill="{ink}"/>'
+        + ticket
     )
     return svg(inner, W, H)
 
 
 def touch_icon():
     inner = (
-        '<defs><radialGradient id="tb" cx="50%" cy="0%" r="90%"><stop offset="0" stop-color="#16244A"/>'
-        '<stop offset="1" stop-color="#070B1A"/></radialGradient></defs>'
-        '<rect width="180" height="180" fill="url(#tb)"/>'
-        f'<g transform="translate(26 24) scale(2)">{mark_coin("ti", False)}</g>'
+        '<rect width="180" height="180" fill="#F5F0E6"/>'
+        f'<g transform="translate(26 24) scale(2)">{mark_coin("ti", True)}</g>'
     )
     return svg(inner, 180, 180)
 

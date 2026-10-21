@@ -1,66 +1,58 @@
-import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
-import { Plus } from 'lucide-react'
 import { useId, useState } from 'react'
 import { useTx } from '../hooks/useTx'
-import { Reveal } from './ui/Reveal'
-import { SectionHeading } from './ui/SectionHeading'
+import { DocNo } from './ui/Doc'
 
 export function Faq() {
   const { t, f } = useTx()
   const s = t.faq
   const [open, setOpen] = useState<number | null>(0)
-  const reduce = useReducedMotion()
   const uid = useId()
 
   return (
-    <section id="faq" aria-labelledby="faq-title" className="section tone-light">
-      <div className="container-x grid gap-10 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
-        <div className="lg:sticky lg:top-28 lg:self-start">
-          <SectionHeading n="14" id="faq-title" eyebrow={s.eyebrow} title={s.title} accent={s.titleAccent} />
-        </div>
-        <Reveal>
-          <ul className="border-t border-line/15">
+    <section id="faq" aria-labelledby="faq-title" className="border-t py-20 rule sm:py-28">
+      <div className="w-wide">
+        <DocNo n={14} label={t.sections.faq} />
+        <div className="mt-8 grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+          <h2 id="faq-title" className="h-section lg:sticky lg:top-24 lg:self-start">
+            {s.title}
+          </h2>
+          <ul className="border-t border-ink">
             {s.items.map((it, i) => {
               const isOpen = open === i
-              const btnId = `${uid}-b${i}`
-              const panelId = `${uid}-p${i}`
               return (
-                <li key={i} className="border-b border-line/10">
+                <li key={i} className="border-b rule">
                   <h3>
                     <button
-                      id={btnId}
+                      id={`${uid}-b${i}`}
                       type="button"
                       aria-expanded={isOpen}
-                      aria-controls={panelId}
+                      aria-controls={`${uid}-p${i}`}
                       onClick={() => setOpen(isOpen ? null : i)}
-                      className="flex w-full items-baseline gap-4 py-5 text-left text-base font-semibold sm:text-[17px]"
+                      className="grid min-h-[56px] w-full grid-cols-[48px_1fr_24px] items-baseline gap-x-3 py-5 text-left sm:grid-cols-[64px_1fr_24px]"
                     >
-                      <span className="w-6 shrink-0 text-xs font-semibold text-ink-muted">{String(i + 1).padStart(2, '0')}</span>
-                      <span className="flex-1">{f(it.q)}</span>
-                      <Plus size={18} className={`shrink-0 self-center transition-transform duration-300 ${isOpen ? 'rotate-45 text-accent' : 'text-ink-muted'}`} aria-hidden="true" />
+                      <span className="font-serif text-[30px] font-light leading-none text-ink-2 sm:text-[38px]">{i + 1}</span>
+                      <span className="text-[17px] font-medium sm:text-[18px]">{f(it.q)}</span>
+                      <span aria-hidden="true" className="text-right font-mono text-[20px]">
+                        {isOpen ? '−' : '+'}
+                      </span>
                     </button>
                   </h3>
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <m.div
-                        id={panelId}
-                        role="region"
-                        aria-labelledby={btnId}
-                        className="overflow-hidden"
-                        initial={reduce ? false : { height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={reduce ? undefined : { height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      >
-                        <p className="pb-6 pl-10 pr-8 text-[15px] leading-relaxed text-ink-muted sm:text-base">{f(it.a)}</p>
-                      </m.div>
-                    )}
-                  </AnimatePresence>
+                  <div
+                    id={`${uid}-p${i}`}
+                    role="region"
+                    aria-labelledby={`${uid}-b${i}`}
+                    className="grid transition-[grid-template-rows] duration-300 ease-out"
+                    style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+                  >
+                    <div className="overflow-hidden" inert={!isOpen}>
+                      <p className="pb-6 pl-[60px] pr-8 text-ink-2 sm:pl-[76px]">{f(it.a)}</p>
+                    </div>
+                  </div>
                 </li>
               )
             })}
           </ul>
-        </Reveal>
+        </div>
       </div>
     </section>
   )

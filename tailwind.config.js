@@ -1,37 +1,27 @@
 /** @type {import('tailwindcss').Config} */
-
-// Цвета, которые меняются в светлых секциях (.tone-light), заданы CSS-переменными в index.css
-const v = (name) => `rgb(var(--${name}) / <alpha-value>)`
-
+// Цвета и шрифты — по DESIGN.md
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        night: { DEFAULT: '#070B1A', 2: '#0B1226' },
-        cream: '#F3F0E8',
-        ink: { DEFAULT: v('ink'), muted: v('muted') },
-        line: v('line'),
-        surface: v('surface'),
-        accent: v('accent'), // золото для текста (в светлых секциях темнее)
-        link: v('link'), // голубой для текста (в светлых секциях темнее)
-        gold: { DEFAULT: '#F4C46A', glow: '#FFE2A8', deep: '#C8932E' },
-        sky: { DEFAULT: '#6CC3FF', glow: '#BFE6FF', deep: '#2E8FD6' },
-        coral: v('coral'),
+        paper: { DEFAULT: '#F5F0E6', 2: '#FBF8F2' },
+        ink: { DEFAULT: '#14213A', 2: '#5B6478' },
+        gold: { DEFAULT: '#F4C46A', ink: '#A8761F', soft: '#F8DBA0' },
+        sky: { DEFAULT: '#6CC3FF', ink: '#1F6FAE' },
+        board: { DEFAULT: '#111722', 2: '#1A2231', line: '#2A3446', text: '#E9E4D8' },
+        stamp: '#C4452D',
         wa: '#25D366',
       },
       fontFamily: {
-        sans: ['Onest', 'system-ui', 'sans-serif'],
-        display: ['Onest', 'system-ui', 'sans-serif'],
-        serif: ['Lora', 'Georgia', 'serif'],
+        serif: ['Literata', 'Georgia', 'serif'],
+        sans: ['"IBM Plex Sans"', 'Helvetica', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', 'Menlo', 'monospace'],
       },
-      keyframes: {
-        marquee: { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-50%)' } },
-        ping2: { '0%': { transform: 'scale(1)', opacity: '.8' }, '100%': { transform: 'scale(2.6)', opacity: '0' } },
-      },
-      animation: {
-        marquee: 'marquee 60s linear infinite',
-        ping2: 'ping2 1.6s cubic-bezier(0,0,.2,1) infinite',
+      borderRadius: {
+        DEFAULT: '2px',
+        sm: '2px',
+        md: '4px',
       },
     },
   },

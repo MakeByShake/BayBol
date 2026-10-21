@@ -1,9 +1,30 @@
-import { ArrowUpRight } from 'lucide-react'
 import { SITE } from '../config/site'
 import { useTx } from '../hooks/useTx'
-import { Reveal } from './ui/Reveal'
-import { SectionHeading } from './ui/SectionHeading'
+import { DocNo } from './ui/Doc'
+import { GuillocheBand } from './ui/Guilloche'
+import { Logo } from './ui/Logo'
+import { Seal } from './ui/Seal'
 
+const PHOTO_ROT = [-2, 1.5, -1, 2, -1.5, 1]
+
+/** Уголки, которыми фото «вклеено» в альбом */
+function Corners() {
+  const corners = [
+    ['-left-1 -top-1', 'polygon(0 0,100% 0,0 100%)'],
+    ['-right-1 -top-1', 'polygon(0 0,100% 0,100% 100%)'],
+    ['-bottom-1 -left-1', 'polygon(0 0,0 100%,100% 100%)'],
+    ['-bottom-1 -right-1', 'polygon(100% 0,100% 100%,0 100%)'],
+  ]
+  return (
+    <span aria-hidden="true">
+      {corners.map(([pos, clip]) => (
+        <span key={pos} className={`absolute h-5 w-5 bg-ink/70 ${pos}`} style={{ clipPath: clip }} />
+      ))}
+    </span>
+  )
+}
+
+/** «Почему BayBol Visa» — как официальная справка с печатью */
 export function Trust() {
   const { t, f, lang } = useTx()
   const s = t.trust
@@ -11,65 +32,70 @@ export function Trust() {
     legal: SITE.company.legalName,
     bin: SITE.company.bin,
     address: SITE.company.address[lang],
+    hours: SITE.workHours[lang],
     handle: SITE.instagram.handle,
   }
 
   return (
-    <section aria-labelledby="trust-title" className="section tone-light">
-      <div className="container-x">
-        <SectionHeading n="12" id="trust-title" eyebrow={s.eyebrow} title={s.title} accent={s.titleAccent} />
+    <section aria-labelledby="trust-title" className="border-t py-20 rule sm:py-28">
+      <div className="w-full-x">
+        <DocNo n={12} label={t.sections.trust} />
+        <h2 id="trust-title" className="h-section mt-8">
+          {s.title}
+        </h2>
 
-        <ul className="mt-12 grid border-t border-line/15 sm:grid-cols-2 lg:grid-cols-4">
-          {s.items.map((it, i) => (
-            <Reveal
-              as="li"
-              key={i}
-              delay={i * 0.05}
-              className={`border-b border-line/10 py-6 sm:pr-6 ${i % 2 ? 'sm:border-l sm:pl-6' : ''} ${i === 2 ? 'lg:border-l lg:pl-6' : ''} lg:border-b-0`}
-            >
-              <span className="text-xs font-semibold text-accent">{String(i + 1).padStart(2, '0')}</span>
-              <h3 className="mt-3 text-base font-semibold">{it.title}</h3>
-              <p className="mt-1.5 break-words text-sm leading-relaxed text-ink-muted">{f(it.text, vars)}</p>
-              {i === 3 && (
-                <a
-                  href={SITE.instagram.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-link underline-offset-4 hover:underline"
-                >
-                  {s.instagramBtn}
-                  <ArrowUpRight size={15} aria-hidden="true" />
-                </a>
-              )}
-            </Reveal>
-          ))}
-        </ul>
+        <div className="mt-12 grid gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
+          {/* справка */}
+          <article className="doc relative overflow-hidden px-6 pb-10 pt-8 sm:px-10">
+            <GuillocheBand className="pointer-events-none absolute inset-x-0 top-0 h-16 w-full" opacity={0.6} />
+            <header className="relative flex items-center justify-between gap-4 border-b border-ink pb-5">
+              <Logo className="h-7 w-auto sm:h-8" />
+              <p className="font-serif text-[26px] sm:text-[30px]">{s.docTitle}</p>
+            </header>
+            <dl className="relative mt-6 space-y-3 font-mono text-[14px]">
+              {s.docLines.map((l, i) => (
+                <div key={i} className="leader flex-wrap sm:flex-nowrap">
+                  <dt className="shrink-0 text-ink-2">{l.k}</dt>
+                  <span aria-hidden="true" className="fill hidden sm:block" />
+                  <dd className="w-full text-ink sm:w-auto sm:text-right">
+                    {l.k === 'Instagram' ? (
+                      <a href={SITE.instagram.url} target="_blank" rel="noopener noreferrer" className="link">
+                        {f(l.v, vars)}
+                      </a>
+                    ) : (
+                      f(l.v, vars)
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p className="relative mt-8 max-w-[34rem] font-serif text-[18px] leading-[1.7]">{s.docBody}</p>
+            <div className="relative mt-8 flex items-end justify-between gap-6">
+              <p className="font-mono text-[12px] text-ink-2">
+                {SITE.company.owner}
+                <span className="mt-6 block w-40 border-t border-ink pt-1">М.П.</span>
+              </p>
+              <Seal text={s.seal} className="h-32 w-32 shrink-0 -rotate-12 sm:h-36 sm:w-36" />
+            </div>
+          </article>
 
-        {/* настоящие фото клиентов */}
-        <Reveal className="mt-14">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
-            <h3 className="text-xl font-semibold sm:text-2xl">{s.clientsTitle}</h3>
-            <p className="max-w-md text-sm leading-relaxed text-ink-muted">{s.clientsNote}</p>
+          {/* вклеенные фото клиентов */}
+          <div>
+            <p className="font-serif text-[22px]">{s.photosTitle}</p>
+            <p className="mt-2 max-w-[28rem] text-[15px] text-ink-2">{s.photosNote}</p>
+            <ul className="mt-8 grid grid-cols-2 gap-x-5 gap-y-7 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
+              {SITE.photos.clients.map((src, i) => (
+                <li key={src} className="relative bg-paper-2 p-2 pb-6" style={{ transform: `rotate(${PHOTO_ROT[i % PHOTO_ROT.length]}deg)` }}>
+                  <img src={src} alt={s.photoAlt} loading="lazy" decoding="async" width={720} height={540} className="aspect-[4/5] w-full object-cover object-[50%_30%]" />
+                  <Corners />
+                </li>
+              ))}
+            </ul>
+            <a href={SITE.instagram.url} target="_blank" rel="noopener noreferrer" className="link mt-8 inline-block">
+              {s.instagramBtn}
+            </a>
           </div>
-          <ul className="mt-6 grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
-            {SITE.photos.clients.map((src, i) => (
-              <li key={src} className="relative overflow-hidden rounded-lg bg-[#0B2233]/10">
-                <img
-                  src={src}
-                  alt={s.clientAlt}
-                  loading="lazy"
-                  decoding="async"
-                  width={720}
-                  height={540}
-                  className="aspect-[4/3] h-full w-full object-cover object-[50%_30%]"
-                />
-                <span className="absolute bottom-2 left-2 rounded bg-[#0B2233]/80 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+        </div>
       </div>
     </section>
   )

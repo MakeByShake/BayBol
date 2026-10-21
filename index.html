@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>%SEO_TITLE%</title>
     <meta name="description" content="%SEO_DESC%" />
-    <meta name="theme-color" content="#070B1A" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#F5F0E6" />
+    <meta name="color-scheme" content="light" />
     <link rel="canonical" href="%SITE_URL%/" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -29,20 +29,12 @@
     <meta name="twitter:description" content="%SEO_DESC%" />
     <meta name="twitter:image" content="%SITE_URL%/og-image.png" />
 
-    <!-- Шрифты: Onest (текст и заголовки) + Lora italic (акцентные слова), обе с полной поддержкой казахских букв -->
+    <!-- Шрифты (DESIGN.md): Literata — заголовки, IBM Plex Sans — текст, IBM Plex Mono — данные.
+         Все три проверены на казахские буквы Ә Ғ Қ Ң Ө Ұ Ү Һ І и знак ₸ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin"
-      media="print"
-      onload="this.media='all'"
-    />
-    <!-- Lora — только для акцентных слов; optional: не перерисовываем заголовок, если шрифт не успел -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,500&display=optional&subset=cyrillic,cyrillic-ext,latin" media="print" onload="this.media='all'" />
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin" />
-    </noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300;7..72,400;7..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" /></noscript>
 
     <!-- %SEO_SCHEMA% — разметка schema.org (LocalBusiness + FAQPage) подставляется при сборке из config -->
   </head>

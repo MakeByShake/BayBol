@@ -19,6 +19,8 @@ export function useTx() {
       visas: formatNumber(DV.visasPerYear),
       site: DV.officialSite.replace(/^https?:\/\//, ''),
       openDate: formatDate(OPENS_AT, 'noLater', t),
+      openShort: formatDate(OPENS_AT, 'dayMonthNum', t),
+      courtDate: formatDate(DV.courtDate, 'numeric', t),
       courtCase: DV.courtCase,
       payment: SITE.paymentMethods[lang],
     }),

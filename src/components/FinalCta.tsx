@@ -1,48 +1,66 @@
-import { m, useInView, useReducedMotion } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
-import { forwardRef, useRef } from 'react'
+// avoid-ai-design-ignore-file: SD4m — поля посадочного талона
+import { DV } from '../config/dv'
+import { useCountdown } from '../hooks/useCountdown'
 import { useTx } from '../hooks/useTx'
+import { formatDate } from '../lib/format'
 import { waLink } from '../lib/whatsapp'
-import { GoldButton } from './ui/Buttons'
-import { Countdown } from './ui/Countdown'
+import { Barcode } from './ui/Barcode'
+import { WhatsAppIcon } from './ui/Icons'
+import { SplitFlap } from './ui/SplitFlap'
+import { Ticket } from './ui/Ticket'
 
-/** Финальный призыв. Здесь «приземляется» самолётик маршрута (точка landing) */
-export const FinalCta = forwardRef<HTMLDivElement>(function FinalCta(_, landingRef) {
+const pad = (n: number) => String(n).padStart(2, '0')
+
+/** Финальный призыв — большой посадочный талон, на корешке таймер и кнопка */
+export function FinalCta() {
   const { t, f } = useTx()
   const c = t.finalCta
-  const reduce = useReducedMotion()
-  const boxRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(boxRef, { once: true, margin: '0px 0px -35% 0px' })
+  const b = t.board
+  const { phase, days, hours, minutes } = useCountdown()
 
   return (
-    <section aria-labelledby="final-title" className="section tone-dark overflow-hidden">
-      <div ref={boxRef} className="container-x relative pt-16 text-center sm:pt-20">
-        {/* мягкое золотое свечение в момент «посадки» */}
-        <m.div
-          aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(244,196,106,.28),rgba(244,196,106,.06)_45%,transparent_70%)]"
-          style={{ x: '-50%', y: '-50%' }}
-          initial={reduce ? false : { scale: 0.3, opacity: 0 }}
-          animate={inView ? { scale: 1, opacity: 1 } : {}}
-          transition={{ duration: 1.2, ease: 'easeOut', delay: 0.2 }}
+    <section aria-labelledby="final-title" className="border-t py-20 rule sm:py-28">
+      <div className="w-wide">
+        <Ticket
+          stubY={250}
+          stubX={320}
+          main={
+            <div className="p-6 sm:p-10">
+              <p className="font-mono text-[12px] uppercase tracking-[0.1em] text-ink-2">
+                ALA → USA&ensp;{DV.programName}
+              </p>
+              <h2 id="final-title" className="mt-5 max-w-[16ch] font-serif font-light leading-[1.05]" style={{ fontSize: 'clamp(32px, 4.6vw, 58px)', letterSpacing: '-0.02em' }}>
+                {f(c.title)}
+              </h2>
+              <p className="mt-5 max-w-[32rem] text-ink-2">{c.text}</p>
+            </div>
+          }
+          stub={
+            <div className="flex h-full flex-col justify-between gap-4 p-6">
+              <div>
+                <p className="font-mono text-[12px] uppercase tracking-[0.1em] text-ink-2">{phase === 'open' ? b.countOpen : phase === 'before' ? b.countBefore : c.stub}</p>
+                {phase !== 'closed' ? (
+                  <p className="mt-3 flex items-start gap-1.5 text-[26px] text-paper" role="timer" aria-label={`${days} ${b.unitsFull[0]}, ${hours} ${b.unitsFull[1]}, ${minutes} ${b.unitsFull[2]}`}>
+                    {[pad(days), pad(hours), pad(minutes)].map((v, i) => (
+                      <span key={i} className="flex flex-col items-center">
+                        <SplitFlap value={v} className="[--flap-bg:#14213A] [--flap-seam:rgba(245,240,230,.25)]" />
+                        <span className="mt-1 font-mono text-[10px] uppercase text-ink-2">{b.units[i]}</span>
+                      </span>
+                    ))}
+                  </p>
+                ) : (
+                  <p className="mt-2 text-[15px]">{f(b.closedTitle, { date: formatDate(DV.resultsBy, 'until', t) })}</p>
+                )}
+              </div>
+              <a href={waLink(f(t.wa.general))} target="_blank" rel="noopener noreferrer" className="btn-gold w-full">
+                <WhatsAppIcon size={19} />
+                {c.btn}
+              </a>
+              <Barcode seed={42} className="hidden h-8 w-full sm:block" />
+            </div>
+          }
         />
-        {/* точка посадки */}
-        <div ref={landingRef} aria-hidden="true" className="absolute left-1/2 top-0 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold" />
-
-        <div className="relative">
-          <h2 id="final-title" className="mx-auto max-w-3xl text-[30px] font-semibold leading-[1.1] sm:text-5xl lg:text-[56px]">
-            {c.title} <span className="accent-word">{c.titleAccent}</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">{c.text}</p>
-          <div className="mt-9">
-            <Countdown align="center" />
-          </div>
-          <GoldButton href={waLink(f(t.wa.general))} size="lg" className="mt-9 w-full min-[480px]:w-auto">
-            {c.btn}
-            <ArrowUpRight size={18} aria-hidden="true" />
-          </GoldButton>
-        </div>
       </div>
     </section>
   )
-})
+}

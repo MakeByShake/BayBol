@@ -56,6 +56,7 @@ export function formatDate(input: string | Date, style: DateStyle, t: Dict): str
     mGen: months.gen[m],
     mDat: months.dat[m],
     mAbl: months.abl[m],
+    mLoc: months.loc[m],
     time: `${hh}:${mm}`,
   }).replace(/ /g, NBSP)
 }

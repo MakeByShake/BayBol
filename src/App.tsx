@@ -1,32 +1,28 @@
 import { LazyMotion, MotionConfig, domAnimation } from 'framer-motion'
-import { startTransition, useCallback, useEffect, useRef, useState } from 'react'
+import { startTransition, useCallback, useEffect, useState } from 'react'
 import { Benefits } from './components/Benefits'
-import { Changes } from './components/Changes'
+import { Board } from './components/Board'
 import { Compare } from './components/Compare'
-import { Contacts } from './components/Contacts'
 import { Faq } from './components/Faq'
 import { FinalCta } from './components/FinalCta'
-import { FlightPath } from './components/FlightPath'
 import { FloatingWhatsApp } from './components/FloatingWhatsApp'
 import { Footer } from './components/Footer'
 import { Guarantees } from './components/Guarantees'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
+import { How } from './components/How'
 import { Included } from './components/Included'
-import { Marquee } from './components/Marquee'
 import { Mistakes } from './components/Mistakes'
-import { PhotoRequirements } from './components/PhotoRequirements'
+import { News } from './components/News'
+import { Photo } from './components/Photo'
 import { Pricing } from './components/Pricing'
 import { PrivacyModal } from './components/PrivacyModal'
 import { Quiz } from './components/Quiz'
-import { Roadmap } from './components/Roadmap'
+import { Route } from './components/Route'
 import { Stats } from './components/Stats'
-import { Steps } from './components/Steps'
 import { Trust } from './components/Trust'
 
 export default function App() {
-  const routeRef = useRef<HTMLDivElement>(null)
-  const landingRef = useRef<HTMLDivElement>(null)
   const [privacyOpen, setPrivacyOpen] = useState(false)
   const closePrivacy = useCallback(() => setPrivacyOpen(false), [])
 
@@ -54,36 +50,31 @@ export default function App() {
       <MotionConfig reducedMotion="user">
         <Header />
         <main id="main">
-          {/* всё, над чем пролетает самолётик маршрута */}
-          <div ref={routeRef} className="relative">
-            <Hero />
-            <Marquee />
-            {stage >= 1 && (
-              <>
-                <Stats />
-                <Changes />
-                <Quiz />
-                <Mistakes />
-                <PhotoRequirements />
-                <Included />
-              </>
-            )}
-            {stage >= 2 && (
-              <>
-                <FlightPath containerRef={routeRef} landingRef={landingRef} />
-                <Compare />
-                <Benefits />
-                <Pricing />
-                <Steps />
-                <Roadmap />
-                <Trust />
-                <Guarantees />
-                <Faq />
-                <FinalCta ref={landingRef} />
-              </>
-            )}
-          </div>
-          {stage >= 2 && <Contacts />}
+          <Hero />
+          <Board />
+          {stage >= 1 && (
+            <>
+              <Stats />
+              <News />
+              <Quiz />
+              <Mistakes />
+              <Photo />
+              <Included />
+            </>
+          )}
+          {stage >= 2 && (
+            <>
+              <Compare />
+              <Benefits />
+              <Pricing />
+              <How />
+              <Route />
+              <Trust />
+              <Guarantees />
+              <Faq />
+              <FinalCta />
+            </>
+          )}
         </main>
         {stage >= 2 && <Footer onPrivacy={() => setPrivacyOpen(true)} />}
         <FloatingWhatsApp />

@@ -30,3 +30,12 @@ export function InstagramIcon({ className, size = 20 }: P) {
     </svg>
   )
 }
+
+/** Галочка, как поставленная ручкой */
+export function InkCheck({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 13 C 6 15, 8 17, 10 20 C 13 13, 17 7, 22 2" />
+    </svg>
+  )
+}

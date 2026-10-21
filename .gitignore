@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# дизайн-скиллы Claude (инструменты, не часть сайта)
+.claude/
