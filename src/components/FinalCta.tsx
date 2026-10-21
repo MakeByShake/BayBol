@@ -1,4 +1,5 @@
 // avoid-ai-design-ignore-file: SD4m — поля посадочного талона
+import { forwardRef } from 'react'
 import { DV } from '../config/dv'
 import { useCountdown } from '../hooks/useCountdown'
 import { useTx } from '../hooks/useTx'
@@ -11,8 +12,8 @@ import { Ticket } from './ui/Ticket'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-/** Финальный призыв — большой посадочный талон, на корешке таймер и кнопка */
-export function FinalCta() {
+/** Финальный призыв — большой посадочный талон, на корешке таймер и кнопка. Здесь «приземляется» самолётик маршрута */
+export const FinalCta = forwardRef<HTMLSpanElement>(function FinalCta(_, landingRef) {
   const { t, f } = useTx()
   const c = t.finalCta
   const b = t.board
@@ -20,7 +21,9 @@ export function FinalCta() {
 
   return (
     <section aria-labelledby="final-title" className="border-t py-20 rule sm:py-28">
-      <div className="w-wide">
+      <div className="w-wide relative">
+        {/* точка посадки самолётика — над талоном */}
+        <span ref={landingRef} aria-hidden="true" className="absolute -top-6 left-1/2 h-2.5 w-2.5 -translate-x-1/2 rounded-full border-2 border-sky-ink bg-paper" />
         <Ticket
           stubY={250}
           stubX={320}
@@ -63,4 +66,4 @@ export function FinalCta() {
       </div>
     </section>
   )
-}
+})
